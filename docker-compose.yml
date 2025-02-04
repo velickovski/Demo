@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  task_manager:
+    build: .
+    container_name: task_manager_app
+    restart: always
+    volumes:
+      - "C:/Users/andrej.velickovski/Downloads/SmartTaskOrganizer/data/data.csv:/app/data.csv"
+    stdin_open: true
+    tty: true
