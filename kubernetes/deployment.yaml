@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: SmartTaskOrganizer
+  namespace: SmartTaskOrganizer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: SmartTaskOrganizer
+  template:
+    metadata:
+      labels:
+        app: SmartTaskOrganizer
+    spec:
+      containers:
+        - name: SmartTaskOrganizer
+          image: andrej/project-tasks:latest
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 8050
+          envFrom:
+            - configMapRef:
+                name: SmartTaskOrganizer-config

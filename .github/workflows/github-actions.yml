@@ -1,0 +1,52 @@
+name: Project-Tasks CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+jobs:
+  build-and-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USER }}/myapp:latest .
+
+      - name: Push to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USER }}" --password-stdin
+          docker push ${{ secrets.DOCKERHUB_USER }}/myapp:latest
+
+      - name: Send success message
+        if: success()
+        run: |
+          echo "Everything passed! The code works and Docker image is ready!"
+
+      - name: Send failure message
+        if: failure()
+        run: |
+          echo "Something went wrong. Check the logs above to see what failed."
+
+      - name: Create GitHub Issue on Failure
+        if: failure()
+        uses: dacbd/create-issue-action@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          title: "CI/CD Pipeline Failure"
+          body: "The pipeline failed. Check the logs for details!"
+          labels: "bug, CI/CD"

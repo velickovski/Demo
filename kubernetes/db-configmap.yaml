@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: SmartTaskOrganizer
+data:
+  - name: task-data
+    mountPath: /app/tasks.csv

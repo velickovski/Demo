@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import logging.config
 from dotenv import load_dotenv
+from models.task import Task  # Ensure Task is imported
 
 # Configure logging
 logging.config.fileConfig('logging.conf')
@@ -40,12 +41,12 @@ def get_next_id() -> int:
         logger.error(f"Error retrieving next task ID: {e}")
         return 1
 
-def save_task_to_csv(task):
+def save_task_to_csv(task: Task):
     """
-    Appends a Task object to a CSV file as a new row with an auto-incremented ID and default visibility.
+    Saves a given Task object to the CSV file.
 
     Parameters:
-    - task (Task): The Task object to append.
+    - task (Task): The Task object to save.
     """
     try:
         task_id = get_next_id()
